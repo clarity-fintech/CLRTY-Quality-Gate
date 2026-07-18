@@ -1,0 +1,19 @@
+{
+  "skill_id": "CLRTY-QG-001",
+  "name": "CLRTY Quality Gate",
+  "components": [
+    "https://www.clarity-fintech.com/"
+  ],
+  "operational_logic": {
+    "intent": "Static security + CLRTY-1 probe gate",
+    "execution_path": "Rules scan -> eBPF policy check -> optional CLRTY-1 probe",
+    "substrate": "CLRTY-1"
+  },
+  "security_hardening": "eBPF-monitored deny-by-default settlement egress; TLS RPC and chain-id pin",
+  "clrty1": {
+    "chain_id": "clrty-1",
+    "numeric_chain_id": 1202,
+    "denom": "uclrty",
+    "rpc_env": "CLRTY_L1_RPC"
+  }
+}

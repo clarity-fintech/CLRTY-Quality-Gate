@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import {
   CLRTY1_CHAIN_ID,
@@ -6,6 +6,7 @@ import {
   loadClrty1Config,
   type Clrty1Config,
 } from "./clrty1.js";
+import { validateEbpfPolicy } from "./security/validate_ebpf.js";
 
 export type RuleFinding = {
   rule: string;
@@ -177,6 +178,31 @@ export function checkChainIdPin(
   return { ok: findings.length === 0, findings };
 }
 
+/** Require security/ebpf/filters.yaml with deny_by_default. */
+export function checkEbpfPolicy(rootDir: string): RuleResult {
+  const findings: RuleFinding[] = [];
+  const yamlPath = join(rootDir, "security/ebpf/filters.yaml");
+  if (!existsSync(yamlPath)) {
+    findings.push({
+      rule: "ebpf_policy",
+      severity: "error",
+      message: "security/ebpf/filters.yaml is required",
+      file: "security/ebpf/filters.yaml",
+    });
+    return { ok: false, findings };
+  }
+  const result = validateEbpfPolicy(rootDir);
+  if (!result.ok) {
+    findings.push({
+      rule: "ebpf_policy",
+      severity: "error",
+      message: result.error || "eBPF policy invalid (deny_by_default required)",
+      file: "security/ebpf/filters.yaml",
+    });
+  }
+  return { ok: findings.length === 0, findings };
+}
+
 /** Run all static / config rules. */
 export function runRules(
   rootDir: string,
@@ -186,6 +212,7 @@ export function runRules(
     checkNoHardcodedPrivateKeys(rootDir),
     checkRpcTlsInProd(env),
     checkChainIdPin(env),
+    checkEbpfPolicy(rootDir),
   ];
   const findings = parts.flatMap((p) => p.findings);
   return {

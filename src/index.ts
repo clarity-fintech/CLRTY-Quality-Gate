@@ -15,9 +15,12 @@ export {
   checkNoHardcodedPrivateKeys,
   checkRpcTlsInProd,
   checkChainIdPin,
+  checkEbpfPolicy,
   runRules,
   type RuleFinding,
   type RuleResult,
 } from "./rules.js";
 
 export { runGate, type GateReport } from "./gate.js";
+export { validateEbpfPolicy } from "./security/validate_ebpf.js";
+export { poolLoopsVersion, runPoolLoop } from "./liquidity/pool_loops.js";

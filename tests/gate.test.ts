@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { mkdtempSync, writeFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { mkdtempSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 import {
   checkChainIdPin,
+  checkEbpfPolicy,
   checkNoHardcodedPrivateKeys,
   checkRpcTlsInProd,
   runRules,
@@ -56,10 +58,28 @@ describe("security rules", () => {
     expect(result.findings[0]?.rule).toBe("no_hardcoded_private_keys");
   });
 
+  it("requires eBPF filters.yaml with deny_by_default", () => {
+    const dir = mkdtempSync(join(tmpdir(), "clrty-gate-no-ebpf-"));
+    expect(checkEbpfPolicy(dir).ok).toBe(false);
+
+    mkdirSync(join(dir, "security/ebpf"), { recursive: true });
+    writeFileSync(
+      join(dir, "security/ebpf/filters.yaml"),
+      'version: "0.1.0"\nmode: deny_by_default\n',
+    );
+    expect(checkEbpfPolicy(dir).ok).toBe(true);
+  });
+
   it("runRules passes clean fixture", () => {
     const dir = mkdtempSync(join(tmpdir(), "clrty-gate-clean-"));
     mkdirSync(join(dir, "src"), { recursive: true });
     writeFileSync(join(dir, "src", "ok.ts"), "export const x = 1;\n");
+    mkdirSync(join(dir, "security/ebpf"), { recursive: true });
+    const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+    copyFileSync(
+      join(repoRoot, "security/ebpf/filters.yaml"),
+      join(dir, "security/ebpf/filters.yaml"),
+    );
     const result = runRules(dir, {
       NODE_ENV: "development",
       CLRTY_L1_RPC: "https://rpc.clarity-fintech.com",
