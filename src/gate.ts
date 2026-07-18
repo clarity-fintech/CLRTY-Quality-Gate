@@ -90,6 +90,7 @@ async function main() {
               chainId: report.probe.chainId,
               tipHeight: report.probe.tipHeight,
               source: report.probe.source,
+              fallbacks_tried: report.probe.fallbacks_tried,
               error: report.probe.error,
             }
           : null,

@@ -10,9 +10,10 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "vitest run",
+    "test": "CLRTY_RPC_SMOKE=0 vitest run",
     "gate": "tsx src/gate.ts",
-    "smoke": "CLRTY_RPC_SMOKE=1 tsx src/gate.ts --smoke"
+    "smoke": "node scripts/smoke-clrty1.mjs",
+    "test:live": "CLRTY_LIVE=1 vitest run tests/clrty1_live.test.ts"
   },
   "engines": {
     "node": ">=20"

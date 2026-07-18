@@ -6,8 +6,12 @@ export {
   loadClrty1Config,
   jsonRpc,
   probeClrty1,
+  getClrty1ConnectionReport,
+  assertClrty1Connected,
   rpcSmokeEnabled,
   type Clrty1Config,
+  type Clrty1ProbeResult,
+  type Clrty1ConnectionReport,
   type RpcResult,
 } from "./clrty1.js";
 
