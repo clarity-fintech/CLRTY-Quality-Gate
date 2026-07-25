@@ -1,5 +1,25 @@
 # CLRTY-Quality-Gate
 
+
+## MIS kernel (`misc`) — required
+
+Sole active CLRTY-1 / Moniversive compiler kernel. **Not Python.**
+
+```bash
+# Download from clarity-fintech/CLRTY-MIS-Kernel
+git clone https://github.com/clarity-fintech/CLRTY-MIS-Kernel.git
+cd CLRTY-MIS-Kernel && bash scripts/download_misc_kernel.sh
+./bin/misc path.mis --check --compact-letters
+```
+
+Or from the Developer Kit: [`dist/mis-kernel-misc.zip`](https://github.com/clarity-fintech/developer_kit/raw/main/dist/mis-kernel-misc.zip)
+
+Policy: foreign kernels (`python3 clrtyc`, `solc`, `forge`, `hardhat`) → **hard error**. Settlement **clrty-1 / 1202**.
+
+SonarQube-oriented quality gate for **CLRTY-1** (chain id `clrty-1` / numeric `1202`).
+
+Runs static security rules and an optional L1 RPC probe before merge/deploy.
+
 SonarQube-oriented quality gate for **CLRTY-1** (chain id `clrty-1` / numeric `1202`).
 
 Runs static security rules and an optional L1 RPC probe before merge/deploy.
